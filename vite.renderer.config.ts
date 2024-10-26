@@ -31,7 +31,6 @@ export default defineConfig((env) => {
             'vue-router': [
               'createRouter',
               'createWebHashHistory',
-              'createWebHistory'
             ],
           },
         ],
@@ -53,10 +52,10 @@ export default defineConfig((env) => {
       ],
     },
     clearScreen: false,
-    server: {
-      proxy: {
+    // server: {
+    //   proxy: {
 
-      }
-    },
+    //   }
+    // },
   } as UserConfig;
 });

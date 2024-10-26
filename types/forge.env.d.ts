@@ -6,7 +6,6 @@ declare global {
   // whether you're running in development or production).
   const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
   const MAIN_WINDOW_VITE_NAME: string;
-  const MAIN_WINDOW_DATABASE_PATH:string;
 
   namespace NodeJS {
     interface Process {
@@ -20,7 +19,6 @@ declare global {
   interface VitePluginRuntimeKeys {
     VITE_DEV_SERVER_URL: `${string}_VITE_DEV_SERVER_URL`;
     VITE_NAME: `${string}_VITE_NAME`;
-    DATABASE_PATH:`${string}_DATABASE_PATH`;
   }
 }
 

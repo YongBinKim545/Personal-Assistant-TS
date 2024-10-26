@@ -1,10 +1,9 @@
-import { DataBase } from '../database/connectionManager'
+import { DataBase } from './database/connectionManager'
 
 const db = new DataBase()
-
 export const readAllData = async (tableNames: string[]): Promise<Record<string, any[]>> => {
     db.beginInteraction()
-    db.openConnection(MAIN_WINDOW_DATABASE_PATH)
+    db.openConnection()
     const promises = tableNames.map((tableName) => db.connection(tableName));
     const resolved = await Promise.all(promises);
     const response: Record<string, any[]> = {};
@@ -17,7 +16,7 @@ export const readAllData = async (tableNames: string[]): Promise<Record<string, 
 
 export const readData = async (tableName: string, query: QueryT): Promise<TableContentT[]> => {
     db.beginInteraction()
-    db.openConnection(MAIN_WINDOW_DATABASE_PATH)
+    db.openConnection()
     const { field, condition, value } = query
     const response = await db.connection(tableName).where(field, condition, value)
     db.endInteraction()
@@ -26,7 +25,7 @@ export const readData = async (tableName: string, query: QueryT): Promise<TableC
 
 export const createData = async (tableName: string, payload: TableContentT[]) => {
     db.beginInteraction()
-    db.openConnection(MAIN_WINDOW_DATABASE_PATH)
+    db.openConnection()
     const response = await db.connection(tableName).insert(payload)
     db.endInteraction()
     return response
@@ -34,7 +33,7 @@ export const createData = async (tableName: string, payload: TableContentT[]) =>
 
 export const patchData = async (tableName:string, query:QueryT, payload:TableContentT) => {
     db.beginInteraction()
-    db.openConnection(MAIN_WINDOW_DATABASE_PATH)
+    db.openConnection()
     const { field, condition, value } = query
     const response = await db.connection(tableName).where(field, condition, value).update(payload) //updated rows count
     db.endInteraction()
@@ -43,7 +42,7 @@ export const patchData = async (tableName:string, query:QueryT, payload:TableCon
 
 export const deleteData = async (tableNames: string[], query: QueryT[]) => {
     db.beginInteraction()
-    db.openConnection(MAIN_WINDOW_DATABASE_PATH)
+    db.openConnection()
     const promises = tableNames.map((tableName, index) =>
         db.connection(tableName).where(query[index].field, query[index].condition, query[index].value).delete()
     );

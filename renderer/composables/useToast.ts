@@ -1,22 +1,19 @@
 
 const defaultOption = {
-    info:{
-        title:'info',
-        autoClose:false,
-        color:'#2196F3',
-        duration:7
+    info: {
+        title: 'Notification',
+        autoClose: false,
+        duration: 7
     },
-    success:{
-        title:'success',
-        autoClose:true,
-        color:'#4CAF50',
-        duration:5
+    success: {
+        title: 'Success',
+        autoClose: true,
+        duration: 5
     },
-    warning:{
-        title:'warning',
-        autoClose:false,
-        color:'#ff355b',
-        duration:7
+    error: {
+        title: 'Error',
+        autoClose: false,
+        duration: 7
     }
 }
 export const useToast = createGlobalState(() => {
@@ -32,20 +29,19 @@ export const useToast = createGlobalState(() => {
                 },
             ]
         )
-        return toastID
-    }
-    const getToast = (id: string): ToastT => {
-        const index = toasts.value.findIndex((item) => item.id === id)
-        if (index !== -1) return toasts.value[index]
+        const timeout = _options.duration ? _options.duration * 1000 : 5000
+        if (_options.autoClose) {
+            setTimeout(() => {
+                removeToast(toastID)
+            }, timeout)
+        }
     }
     const removeToast = (id: string) => {
-        const index = toasts.value.findIndex((item) => item.id === id)
-        if (index !== -1) toasts.value.splice(index, 1)
+        toasts.value = toasts.value.filter((item) => item.id !== id)
     }
     return {
         toasts,
         createToast,
-        getToast,
         removeToast
     }
 })

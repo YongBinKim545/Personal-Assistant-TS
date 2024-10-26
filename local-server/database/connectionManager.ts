@@ -13,7 +13,7 @@ export class DataBase {
             this.closeConnection();
         }
     }
-    async openConnection(dbPath: string) {
+    async openConnection() {
         if (this._connection) {
             console.log('Database connection already established.')
             return
@@ -22,7 +22,7 @@ export class DataBase {
             this._connection = require('knex')({
                 client: 'sqlite3',
                 connection: {
-                    filename: dbPath,
+                    filename: `${process.env.MY_DATA_PATH}/database.sqlite`,
                 },
                 useNullAsDefault: true,
                 pool: {}

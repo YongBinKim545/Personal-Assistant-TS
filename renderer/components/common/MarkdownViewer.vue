@@ -1,5 +1,5 @@
 <template>
-  <div class="prose dark:prose-invert text-justify" v-html="markdown.render(source)" />
+  <div class="prose dark:prose-invert text-justify max-w-none w-full markdown-content" v-html="markdown.render(source)" />
 </template>
 
 <script setup lang="ts">
@@ -44,7 +44,7 @@ const markdown: MarkdownIt = new MarkdownIt({
         return (
           `<pre class="hljs relative"><code>${highlightjs.highlight(str, { language: lang, ignoreIllegals: true }).value}</code>${copyButton}</pre>`
         );
-      } catch (__) {}
+      } catch (__) { }
     }
     return `<pre class="hljs relative"><code>${markdown.utils.escapeHtml(str)}</code>${copyButton}</pre>`;
   }
@@ -58,3 +58,20 @@ defineProps({
   }
 });
 </script>
+<style scoped>
+.markdown-content :deep(pre),
+.markdown-content :deep(code) {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: start;
+}
+
+.markdown-content :deep(pre) {
+  overflow-x: auto;
+}
+
+.markdown-content :deep(.hljs) {
+  padding: 1em;
+  border-radius: 0.5em;
+}
+</style>

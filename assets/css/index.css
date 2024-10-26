@@ -54,13 +54,79 @@
   html {
     font-family:NotoSansKR, sans-serif;
   }
+  body {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    border-radius:10px;
+  }
 }
 
-@layer component {
-    .cc-list-item {
-        @apply flex justify-between text-sm p-2 rounded-md font-bold hover:bg-light-surface-high hover:dark:bg-dark-surface-high hover:cursor-pointer;
-    }
-    .cc-btn {
-        @apply p-2 text-sm rounded-md font-bold bg-primary text-primary-on cursor-pointer hover:bg-primary-darken !important;
-    }
+@layer components {
+  .cc-positive-button {
+    @apply h-10 p-2 rounded-md w-[120px]
+    text-sm text-center font-bold text-secondary-darken dark:text-secondary-lighten
+    border border-secondary border-opacity-25 dark:border-opacity-70 hover:border-2
+    bg-secondary bg-opacity-10 dark:bg-opacity-20 hover:bg-opacity-20 dark:hover:bg-opacity-30;
+  }
+  .cc-negative-button {
+    @apply h-10 p-2 rounded-md w-[120px]
+    text-sm text-center font-bold text-warning
+    border border-warning border-opacity-25 hover:border-2
+    bg-warning bg-opacity-10 hover:bg-opacity-20;
+  }
+  .cc-default-tab-button {
+    @apply min-h-8 px-2 py-1 rounded-t-md w-[120px]
+    text-sm text-center
+    bg-light-surface-highest bg-opacity-10 hover:bg-opacity-30;
+  }
+  .cc-active-tab-button {
+    @apply min-h-8 px-2 py-1 rounded-t-md w-[120px]
+    text-sm text-center font-bold text-primary-darken dark:text-primary-lighten
+    bg-primary bg-opacity-10 hover:bg-opacity-30 dark:bg-opacity-30 dark:hover:bg-opacity-50;
+  }
+  .cc-badge-primary {
+    @apply px-2 py-1 rounded-md
+    text-xs font-medium text-center uppercase text-primary-darken dark:text-primary-lighten
+    border border-primary border-opacity-25
+    bg-primary bg-opacity-10 dark:bg-opacity-30;
+  }
+  .cc-badge-secondary {
+    @apply px-2 py-1 rounded-md
+    text-xs font-medium text-center uppercase text-secondary-darken dark:text-secondary-lighten
+    border border-secondary border-opacity-25
+    bg-secondary bg-opacity-10 dark:bg-opacity-30;
+  }
+  .cc-badge-warning {
+    @apply px-2 py-1 rounded-md
+    text-xs font-medium text-center uppercase text-warning-darken dark:text-warning-lighten
+    border border-warning border-opacity-25
+    bg-warning bg-opacity-10 dark:bg-opacity-30;
+  }
+}
+
+
+@layer utilities {
+  /* width */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #BBDEFB;
+  border-radius: 4px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #2196F3;
+  border-radius: 4px;
+}
+
+/* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #0D47A1;
+  }
 }

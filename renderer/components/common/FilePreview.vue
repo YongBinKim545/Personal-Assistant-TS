@@ -1,13 +1,17 @@
 <template>
     <div class="relative">
-        <div class="font-bold sticky top-0">
+        <div v-if="props.title" class="font-bold sticky top-0">
             <span>{{ props.title }}</span>
-            <hr class="border-light-border dark:border-dark-border my-3"/>
+            <hr class="my-3" />
         </div>
-        <TransitionGroup name="fade" tag="ul">
-            <li v-for="(list, index) in props.fileList" :key="list.path" class="cc-list-item">
+        <div v-if="props.fileList.length === 0" class="flex items-center justify-center h-[200px]">
+            <span class="text-lg font-bold">No Data</span>
+        </div>
+        <!-- <TransitionGroup v-else name="list"> -->
+            <li v-for="(list, index) in props.fileList" :key="index"
+                class="flex justify-between text-sm p-2 rounded-md font-bold hover:bg-light-surface-high hover:dark:bg-dark-surface-high hover:cursor-pointer">
                 <p class="line-clamp-1">{{ list.name }}</p>
-                <button type="button" @click="onDelete(index)"
+                <button v-if="props.action" type="button" @click="onDelete(index)"
                     class="hover:bg-primary hover:text-dark-surface-on font-sm rounded-full p-1 text-center">
                     <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 24 24">
@@ -16,39 +20,41 @@
                     </svg>
                 </button>
             </li>
-        </TransitionGroup>
+        <!-- </TransitionGroup> -->
     </div>
 </template>
 
 <script lang="ts" setup>
 const emit = defineEmits(['onDelete'])
 interface Props {
-    fileList: FileItemT[] | null,
-    title: string | null
+    fileList: FileItemT[],
+    title?: string,
+    action?:boolean
 }
-const props = withDefaults(defineProps<Props>(), {
-    fileList: null,
-    title: 'title'
-});
+const props = defineProps<Props>()
 const onDelete = (index: number) => {
     emit('onDelete', index)
 }
 </script>
 
 <style scoped>
-.fade-move,
-.fade-enter-active,
-.fade-leave-active {
-    transition: all 0.3s cubic-bezier(0.55, 0, 0.1, 1);
+/* .list-move,
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.5s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.list-enter-from {
     opacity: 0;
-    transform: scaleY(0.2) translate(30px, 30px);
+    transform: translateX(-30px);
 }
 
-.fade-leave-active {
-    position: absolute;
+.list-enter, .list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
 }
+
+.list-leave-active {
+    position: absolute;
+} */
 </style>

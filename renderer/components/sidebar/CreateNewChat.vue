@@ -1,7 +1,7 @@
 <template>
      <router-link :to="{name:'NewChat'}"
         class="flex justify-between items-center p-2 rounded-md font-bold hover:bg-light-surface-high hover:dark:bg-dark-surface-high hover:cursor-pointer">
-        <span class="uppercase">새 대화</span>
+        <span class="uppercase">new chat</span>
         <div class="p-1">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>

@@ -32,8 +32,7 @@ export function getDefineKeys(names: string[]) {
     const NAME = name.toUpperCase();
     const keys: VitePluginRuntimeKeys = {
       VITE_DEV_SERVER_URL: `${NAME}_VITE_DEV_SERVER_URL`,
-      VITE_NAME: `${NAME}_VITE_NAME`,
-      DATABASE_PATH:`${NAME}_DATABASE_PATH`,
+      VITE_NAME: `${NAME}_VITE_NAME`
     };
 
     return { ...acc, [name]: keys };
@@ -42,17 +41,13 @@ export function getDefineKeys(names: string[]) {
 
 export function getBuildDefine(env: ConfigEnv<'build'>) {
   const { command, forgeConfig } = env;
-  const appDataPath = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
-
-
   const names = forgeConfig.renderer.filter(({ name }) => name != null).map(({ name }) => name!);
   const defineKeys = getDefineKeys(names);
   const define = Object.entries(defineKeys).reduce((acc, [name, keys]) => {
-    const { VITE_DEV_SERVER_URL, VITE_NAME, DATABASE_PATH } = keys;
+    const { VITE_DEV_SERVER_URL, VITE_NAME } = keys;
     const def = {
       [VITE_DEV_SERVER_URL]: command === 'serve' ? JSON.stringify(process.env[VITE_DEV_SERVER_URL]) : undefined,
       [VITE_NAME]: JSON.stringify(name),
-      [DATABASE_PATH]:command === 'serve' ? JSON.stringify('./database/database.sqlite') : JSON.stringify(`${appDataPath}/database.sqlite`),
     };
     return { ...acc, ...def };
   }, {} as Record<string, any>);

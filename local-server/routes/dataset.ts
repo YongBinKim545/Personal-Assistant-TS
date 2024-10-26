@@ -1,9 +1,18 @@
 import express, { Request, Response } from 'express';
-import { createData, patchData, deleteData } from '../crud'
+import { readAllData, createData, patchData, deleteData } from '../crud'
 
 const datasetRouter = express.Router()
 export default datasetRouter;
 
+datasetRouter.get('/', async (req: Request, res: Response) => {
+    try {
+        const data = await readAllData(['datasets'])
+        res.status(200).json(data.datasets)
+    } catch (error) {
+        console.error('Error fetching data:', error)
+        res.status(500).send('Internal Server Error')
+    }
+});
 
 datasetRouter.post('/', async (req: Request, res: Response) => {
     try {

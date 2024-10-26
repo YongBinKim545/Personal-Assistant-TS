@@ -9,6 +9,7 @@ export default defineConfig((env) => {
   const define = getBuildDefine(forgeEnv);
   const config: UserConfig = {
     build: {
+      // sourcemap: true,
       lib: {
         entry: forgeConfigSelf.entry!,
         fileName: () => '[name].js',
@@ -19,7 +20,7 @@ export default defineConfig((env) => {
       },
     },
     plugins: [pluginHotRestart('restart')],
-    define:define,
+    define: define,
     resolve: {
       // Load the Node.js entry.
       mainFields: ['module', 'jsnext:main', 'jsnext'],

@@ -303,6 +303,20 @@
     "useFileUploader": true,
     "useChat": true,
     "createWebHistory": true,
-    "getFirstLayerUrl": true
+    "getFirstLayerUrl": true,
+    "useBackground": true,
+    "useDatasetTest": true,
+    "useDataset": true,
+    "useOllama": true,
+    "useModel": true,
+    "useActiveItems": true,
+    "useMode": true,
+    "onWatcherCleanup": true,
+    "useId": true,
+    "useTemplateRef": true,
+    "DirectiveBinding": true,
+    "MaybeRef": true,
+    "MaybeRefOrGetter": true,
+    "useLanguageModel": true
   }
 }

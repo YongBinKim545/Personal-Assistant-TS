@@ -29,10 +29,6 @@ const config: ForgeConfig = {
           entry: 'main/preload.ts',
           config: 'vite.preload.config.ts',
         },
-        {
-          entry: 'worker/documentLoader.ts',
-          config: 'vite.main.config.ts',
-        },
       ],
       renderer: [
         {

@@ -16,9 +16,6 @@ export default {
       center: true
     },
     extend: {
-      fontFamily:{
-        customfont:['LGSmHa', 'san-serif']
-      },
       colors: {
         //surface colors from https://tailwindcolor.com/ (stone)
         'dark': {
@@ -33,7 +30,6 @@ export default {
               'muted': '#78716C'
             }
           },
-          'border': '#78716C'
         },
         'light': {
           'surface': {
@@ -47,17 +43,42 @@ export default {
               'muted': '#A8A29E'
             }
           },
-          'border': '#A8A29E'
         },
         'primary': {
           'DEFAULT': '#009688',
-          'darken': '#00796B',
+          'lighten': '#B2DFDB',
+          'darken': '#00695C',
           'on': '#FFFFFF'
         },
-        'secondary': '#96000E',
-        'warning': '#ff355b',
-        'info': '#2196F3',
-        'success': '#4CAF50',
+        'secondary': {
+          'DEFAULT': '#2196F3',
+          'lighten': '#BBDEFB',
+          'darken': '#0D47A1',
+          'on': '#FFFFFF'
+        },
+        'warning': {
+          'DEFAULT': '#FF9800',
+          'lighten': '#FFE0B2',
+          'darken': '#E65100'
+        },
+        'error': {
+          'DEFAULT': '#F44336',
+          'lighten': '#FFCDD2',
+          'darken': '#B71C1C'
+        },
+        'info': {
+          'DEFAULT': '#673AB7',
+          'lighten': '#D1C4E9',
+          'darken': '#4527A0'
+        },
+        'success': {
+          'DEFAULT': '#4CAF50',
+          'lighten': '#C8E6C9',
+          'darken': '#1B5E20'
+        },
+      },
+      borderColor: {
+        DEFAULT: '#757575',
       }
     },
   },

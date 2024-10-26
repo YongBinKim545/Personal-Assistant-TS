@@ -1,23 +1,47 @@
 <template>
-    <div class="relative grow px-5 py-2">
-        <div class="flex justify-between m-3">
-            <ModeSelection />
-            <ModelSelection />
-        </div>
-        <router-view />
-        <UserInput class="absolute mx-auto left-0 right-0 bottom-5" />
+    <div class="w-full px-5 py-2">
+        <router-view v-slot="{ Component }">
+            <transition mode="out-in" name="fade">
+                <!-- props activeChatTitmeIndex is to update component via route changing, transition between ChatContents will be fired -->
+                <component :is="Component" :key="$route.fullPath" />
+            </transition>
+        </router-view>
     </div>
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-const { chats, activeChatTitleIndex, readChatContent } = useChat()
-watch(() => route.params.titleCode, async (newTitleCode) => {
-    const index = chats.value.findIndex((item) => item.code === newTitleCode)
-    if (index < 0) return
-    activeChatTitleIndex.value = index
-    if (chats.value[index].contents === undefined || chats.value[index].contents?.length === 0) {
-        await readChatContent(chats.value[index].id)
-    }
-})
 </script>
+<style scoped>
+.fade-enter-active {
+    transition: all 0.5s ease;
+}
+
+.fade-leave-active {
+    transition: all 0.2s ease;
+}
+
+.fade-enter-from {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.fade-leave-to {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+/* .slide-left-enter-active,
+.slide-left-leave-active {
+    transition: transform 0.3s ease-out, opacity 0.1s ease-out;
+}
+
+.slide-left-enter-from {
+    transform: translateX(-30%);
+    opacity: 0;
+}
+
+.slide-left-leave-to {
+    transform: translateX(30%);
+    opacity: 0;
+} */
+</style>

@@ -1,17 +1,11 @@
 <template>
-    <div class="grow p-3 bg-transparent flex flex-col">
-        <!-- <div class="font-bold uppercase border-l-4 border-primary my-2 pl-2">dataset details</div>
-        <div class="flex justify-start mb-2 ml-3">
-            <span class="mr-2">Embedding Model :</span>
-            <span class="text-primary font-bold line-clamp-1 uppercase">{{
-                datasets[activeDatasetIndex]?.embedding_model || 'None' }}
-            </span>
-        </div> -->
-        <DataTable searchBar delAction editAction
-            :headers="[{ headername: 'FileName', datakey: 'name' }, { headername: 'Action', datakey: 'action' }]"
-            :contents="datasetDetail" @item-selected="(id: number) => openSelectedItem(id)" @onDelete="deleteItem">
+    <div class="my-3 bg-transparent flex flex-col">
+        <DataTable searchBar delAction
+            :headers="[{ headername: 'File Name', datakey: 'name', width: '90%', align: 'start' }, { headername: 'Action', datakey: 'action', width: '10%', align: 'center' }]"
+            :contents="datasets[activeDatasetIndex]?.contents ?? []" @item-selected="(id: number) => openSelectedItem(id)"
+            @onDelete="deleteItem">
             <template v-slot:itemDetail>
-                <div class="text-base font-bold uppercase my-2 pl-2">dataset details</div>
+                <div class="text-base font-bold uppercase my-2 pl-2">files</div>
             </template>
         </DataTable>
     </div>
@@ -20,30 +14,27 @@
 <script setup lang="ts">
 
 const { createToast } = useToast()
-const { datasetDetail, readDatasetDetail, removeData } = usedatasetDetail()
-const { datasets, activeDatasetIndex } = useDatasets()
-const toastID = ref('')
-const showToast = ref(false)
+const { datasets, activeDatasetIndex, readDatasetDetail, removeDatasetDetail } = useDataset()
 watch(activeDatasetIndex, (newIndex) => {
-    if (newIndex === null) {
-        datasetDetail.value = []
-    } else {
-        readDatasetDetail(datasets.value[newIndex].id)
+    if (newIndex === undefined) return
+    if (datasets.value[newIndex]?.contents.length === 0) {
+        readDatasetDetail(newIndex)
     }
 })
 const openSelectedItem = async (id: number) => {
-    const selectedItemIndex = datasetDetail.value.findIndex((item) => item.id === id)
-    const path = datasetDetail.value[selectedItemIndex].path
+    const datasetContents = datasets.value[activeDatasetIndex.value].contents
+    const selectedItemIndex = datasetContents.findIndex((item) => item.id === id)
+    const path = datasetContents[selectedItemIndex].path
     const response = await window.api.openFile(path)
     if (response !== 'success') {
         console.log(response)
     }
 }
-const deleteItem = async (id:number) => {
-    toastID.value = createToast({
+const deleteItem = async (id: number) => {
+    console.log(datasets.value[0].contents)
+    createToast({
         variant: 'success',
-        message: await removeData(id),
+        message: await removeDatasetDetail(id),
     })
-    showToast.value = true
 }
 </script>

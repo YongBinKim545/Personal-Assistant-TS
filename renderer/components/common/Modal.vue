@@ -1,19 +1,19 @@
 <template>
     <Teleport to="body">
-        <div class="z-10">
-            <Transition name="fade">
+        <div class="z-20">
+            <Transition name="fade1">
                 <div v-if="isShow"
-                    class="fixed inset-0 top-10 w-full h-screen opacity-80 bg-light-surface-highest dark:bg-dark-surface-highest">
+                    class="fixed inset-0 top-10 w-full h-screen opacity-70 bg-light-surface-lowest dark:bg-dark-surface-highest">
                 </div>
             </Transition>
             <Transition name="bounce">
                 <div v-if="isShow" @click.self="() => preventClose()"
-                    class="fixed inset-0 w-full h-screen flex items-center justify-center bg-transparent">
+                    class="absolute left-[350px] m-auto inset-0 flex items-center justify-center bg-transparent">
                     <div ref="modalContainer"
-                        class="rounded-xl bg-light-surface-lowest dark:bg-dark-surface-lowest text-light-surface-on dark:text-dark-surface-on"
+                        class="rounded-md bg-light-surface-lowest shadow-lg dark:bg-dark-surface-low text-light-surface-on dark:text-dark-surface-on"
                         role="dialog">
                         <div
-                            class="px-4 py-2 flex justify-between items-center bg-primary rounded-t-lg text-lg font-bold text-primary-on">
+                            class="px-4 py-1 flex justify-between items-center bg-primary rounded-t-md text-md font-bold text-primary-on">
                             <span class="uppercase">{{ props.title }}</span>
                             <button @click="close"
                                 class="cursor-pointer w-8 h-8 flex justify-center items-center rounded-md hover:bg-primary-darken">
@@ -26,7 +26,7 @@
                         <div class="h-3/4 m-2 p-3">
                             <slot name="body"></slot>
                         </div>
-                        <div v-if="footer" class="mx-5 my-2 pt-3 pb-1 flex justify-end items-center border-t border-light-border dark:border-dark-border">
+                        <div v-if="footer" class="mx-5 mt-2 mb-4 pt-2 flex justify-end items-center border-t">
                             <slot name="footer"></slot>
                         </div>
                     </div>
@@ -36,7 +36,6 @@
     </Teleport>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
 
 interface Props {
     isShow: boolean,
@@ -49,7 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
     footer: false,
 })
 const emit = defineEmits(['close'])
-const modalContainer = ref(null)
+const modalContainer = ref<HTMLElement>()
 
 const close = () => {
     emit('close');
@@ -67,36 +66,25 @@ defineExpose({
 
 </script>
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s ease;
+.fade1-enter-active,
+.fade1-leave-active {
+    transition: all 0.3s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.fade1-enter-from,
+.fade1-leave-to {
     opacity: 0;
 }
 
-.bounce-enter-active {
-    animation: bounce-in 0.5s;
-}
-
+.bounce-enter-active,
 .bounce-leave-active {
-    animation: bounce-in 0.5s reverse;
+    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
 }
 
-@keyframes bounce-in {
-    0% {
-        transform: scale(0);
-    }
-
-    50% {
-        transform: scale(1.25);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+.bounce-enter-from,
+.bounce-leave-to {
+    opacity: 0;
+    transform: scale(0.01) translate(30px, 0);
 }
 
 .vibrate {

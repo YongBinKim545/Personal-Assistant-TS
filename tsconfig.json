@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
     "target": "ESNext",
     "module": "CommonJS",
     "allowJs": true,
@@ -10,11 +8,8 @@
     "noImplicitAny": true,
     "sourceMap": true,
     "baseUrl": ".",
-    // "paths": {
-    //   "@/*": ["renderer/*"]
-    // },
     "outDir": "dist",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   }
 }

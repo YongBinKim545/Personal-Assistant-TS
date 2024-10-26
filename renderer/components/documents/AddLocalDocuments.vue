@@ -1,128 +1,112 @@
 <template>
     <div>
-        <div @click="emit('openAddDocument')"
-            class="flex justify-center p-3 text-sm rounded-md font-bold hover:bg-light-surface-high hover:dark:bg-dark-surface-high hover:cursor-pointer">
-            <span class="uppercase">로컬 문서 추가</span>
+        <div @click="openDialog"
+            class="cc-positive-button w-[150px]">
+            <span class="uppercase">add local files</span>
         </div>
-        <Modal :isShow="showModal" title="로컬 문서 추가" footer @close="emit('closeAddDocument')">
+        <Modal :isShow="showModal" title="add local files" footer @close="closeDialog">
             <template v-slot:body>
-                <div class="flex space-x-8 w-[800px] h-[300px]">
-                    <div class="w-2/5">
-                        <SelectItem @selectionChanged="changeDataset" @newItemAdded="isNewDatasetCreated = false"
-                            :selectedItem="selectedDataset?.name || null" helpText="문서를 추가할 Dataset을 선택"
-                            defaultMessage="Select a Dataset" :options="datasets" :addNew="isNewDatasetCreated">
-                            <template v-slot:addNew>
-                                <li class="cc-list-item hover:cursor-pointer" @click="addNewDataset"
-                                    @mousedown="(e) => e.preventDefault()">
-                                    <span>Add New</span>
-                                </li>
-                            </template>
+                <div class="flex space-x-8 w-[700px] h-[300px]">
+                    <div class="w-[300px] flex flex-col space-y-10">
+                        <SelectItem addNewItemOption @selectionChanged="changeDataset" defaultMessage="Select a Dataset"
+                            hr :options="datasetOptions" :selectedItem="selectedDataset.name" class="mt-2">
                         </SelectItem>
-                        <SelectItem class="mt-4" helpText="문서 Embedding Model 선택"
-                            @selectionChanged="(newModel) => { selectedEmbeddingModel = newModel.name }"
-                            :selectedItem="selectedEmbeddingModel || null"
-                            defaultMessage="Select an Embedding Model" :options="[{id:1, name:'openai'}, {id:2, name:'gemini'}]" />
-                        <FileUploader class="mt-10" @change="addFiles" />
+
+                        <SelectItem :disabled="!allowEmbeddingModelChange" hr
+                            @selectionChanged="(newModel) => { selectedDataset.embedding_model = newModel }"
+                            :defaultMessage="embeddingModelDefaultMessage" :options="embeddingModelOptions"
+                            :selectedItem="selectedDataset.embedding_model" />
+                        <FileUploader @change="addFiles" />
                     </div>
-                    <div class="w-3/5 h-full overflow-y-auto overflow-x-hidden">
-                        <FilePreview :fileList title="추가할 문서" @onDelete="removeFile">
-                        </FilePreview>
+                    <div class="w-[400px] rounded-md">
+                        <div class="flex space-x-2 text-base ml-5 mt-3">
+                            <button @click="showExistingData = false"
+                                :class="[!showExistingData ? 'cc-active-tab-button' : 'cc-default-tab-button']">
+                                NEW</button>
+                            <button @click="() => { if (existingFileList.length > 0) showExistingData = true }"
+                                :class="[showExistingData ? 'cc-active-tab-button' : 'cc-default-tab-button', existingFileList.length > 0 ? '' : 'hover:cursor-not-allowed']">
+                                EXISTING</button>
+                        </div>
+                        <div class="overflow-y-auto overflow-x-hidden h-[265px] p-2 border-t">
+                            <transition name="slide-left" mode="out-in">
+                                <FilePreview v-if="showExistingData" :fileList="existingFileList" />
+                                <FilePreview v-else :fileList="fileList" @onDelete="removeFile" action />
+                            </transition>
+                        </div>
                     </div>
                 </div>
             </template>
             <template v-slot:footer>
-                <hr>
-                <button @click="onSave" class="cc-btn flex justify-center w-[120px]">
+                <button @click="onSave" class="cc-positive-button">
                     SAVE
                 </button>
             </template>
         </Modal>
-        <Toast :isShow="showToast" :toastID="toastID" @close="showToast = false" />
     </div>
 </template>
 
 <script setup lang="ts">
 
-const { datasetDetail} = usedatasetDetail()
-const { datasets, addDataset, activeDatasetIndex } = useDatasets()
+const { datasets, activeDatasetIndex, addDataset, readDatasetDetail, addDatasetDetail } = useDataset()
 const { fileList, addFiles, removeFile } = useFileUploader()
 const { createToast } = useToast()
 const showModal = ref(false)
-const preventClose = ref(false)
-const showToast = ref(false)
-const toastID = ref(null)
-const isNewDataset = ref(false)
-const isNewDatasetCreated = ref(false)
-const selectedDataset = ref<TableContentT>(null)
-const selectedEmbeddingModel = ref<string>(null)
+const showExistingData = ref(false)
+const selectedDataset = ref<DatasetT>()
+const embeddingModelOptions = ref<string[]>([])
+const allowEmbeddingModelChange = ref(false)
+const embeddingModelDefaultMessage = ref<string>()
+const embeddingModels = [{ id: 1, name: 'openai' }, { id: 2, name: 'gemini' }] // to be loaded by DB
 
-interface Props {
-    isShow: boolean
-}
-const props = withDefaults(defineProps<Props>(), {
-    isShow:false
+let datasetIndexToUpdate = -1
+const datasetOptions = computed(() => {
+    return datasets.value.map(({ name }) => name)
 })
-const emit = defineEmits(['addData', 'openAddDocument','closeAddDocument'])
-
-watch(activeDatasetIndex, (newIndex) => {
-    if (newIndex === null) {
-        datasetDetail.value = []
-    }
-})
-watch(
-  () => props.isShow,
-  (newIsShow) => {
-    if (newIsShow){
-        openDialog()
+const existingFileList = computed(() => {
+    if (selectedDataset.value.id === undefined) {
+        return []
     } else {
-        closeDialog()
+        return selectedDataset.value.contents
     }
-  }
-)
+})
 const openDialog = () => {
-    if (activeDatasetIndex && datasets.value.length > 0) {
-        const { id, name, embedding_model } = datasets.value[activeDatasetIndex.value]
-        selectedDataset.value = {
-            id: id,
-            name: name,
-            embedding_model: embedding_model
-        }
-        selectedEmbeddingModel.value = datasets.value[activeDatasetIndex.value].embedding_model
-    }
+    fileList.value = []
+    selectedDataset.value = { name: undefined }
+    embeddingModelOptions.value = []
+    allowEmbeddingModelChange.value = false
+    embeddingModelDefaultMessage.value = 'Select an Embedding Model'
     showModal.value = true
 }
 const closeDialog = () => {
-    if (preventClose.value) return
-    fileList.value = []
-    isNewDataset.value = false
-    isNewDatasetCreated.value = false
-    selectedDataset.value = null
     showModal.value = false
 }
-
-const changeDataset = (newSelectedDataset: TableContentT) => {
-    selectedDataset.value = newSelectedDataset
-    selectedEmbeddingModel.value = newSelectedDataset.embedding_model
-    isNewDataset.value = false
-}
-const addNewDataset = () => {
-    const newDataset = {
-        name: `New Dataset ${Date.now().toString()}`
+const changeDataset = (newSelectedDataset: string) => {
+    const datasetObject = datasets.value.find(element => element.name === newSelectedDataset)
+    if (datasetObject === undefined) {
+        selectedDataset.value = { id: undefined, name: newSelectedDataset, embedding_model: undefined }
+        embeddingModelOptions.value = embeddingModels.map(({ name }) => name)
+        allowEmbeddingModelChange.value = true
+        embeddingModelDefaultMessage.value = 'Select an Embedding Model'
+        showExistingData.value = false
+    } else {
+        selectedDataset.value = datasetObject
+        allowEmbeddingModelChange.value = false
+        embeddingModelDefaultMessage.value = datasetObject.embedding_model
+        if (datasetObject.contents.length === 0) {
+            datasetIndexToUpdate = datasets.value.findIndex(element => element.name === datasetObject.name)
+            readDatasetDetail(datasetIndexToUpdate)
+        }
     }
-    selectedDataset.value = newDataset
-    selectedEmbeddingModel.value = null
-    isNewDataset.value = true
-    isNewDatasetCreated.value = true
 }
 
 const inputValidation = () => {
     let message = 'success'
-    if (selectedDataset.value === null) {
-        message = 'No Dataset Selected'
+    if (selectedDataset.value['name'] === undefined) {
+        message = 'Select or Create a New Dataset'
         return message
     }
-    if (selectedEmbeddingModel.value === undefined || selectedEmbeddingModel.value === null) {
-        message = 'No Embedding Model Selected'
+    if (selectedDataset.value.embedding_model === undefined) {
+        message = 'Select an Embedding Model'
         return message
     }
     if (fileList.value.length === 0) {
@@ -132,43 +116,75 @@ const inputValidation = () => {
     return message
 }
 const onSave = async () => {
-    let validation = inputValidation()
+    const validation = inputValidation()
     if (validation !== 'success') {
-        toastID.value = createToast({
-            variant: 'warning',
+        createToast({
+            variant: 'info',
             message: validation,
         })
-        showToast.value = true
         return
     }
-    preventClose.value = true
-    if (isNewDataset.value) {
-        const payloadDataset = [{
+    let activeId = selectedDataset.value.id
+    if (activeId === undefined) {
+        const newDataset = [{
             name: selectedDataset.value.name,
-            embedding_model: selectedEmbeddingModel.value
+            embedding_model: selectedDataset.value.embedding_model
         }]
-        selectedDataset.value.id = await addDataset(payloadDataset)
+        const response = await addDataset(newDataset)
+        activeId = response.id
+        datasetIndexToUpdate = response.index
     }
-    const payloadData = fileList.value.map((element) => (
-        { name: element.name, path: element.path, dataset_id: selectedDataset.value.id }
+    const newFiles: FileItemT[] = fileList.value.map((element) => (
+        { name: element.name, path: element.path, dataset_id: activeId }
     ))
-    preventClose.value = false
-    emit('addData', payloadData, selectedDataset.value.id)
-//     await addDatasetDetail(payloadData)
-//     const index = datasets.value.findIndex((item) => item.id === selectedDataset.value.id )
-    
-//   // If activeDatasetIndex changes, the readdatasetDetail function in the watch function of DatasetDetail.vue is called. Call the readdatasetDetail function here only if activeDatasetIndex has not changed.
-//     if (index === activeDatasetIndex.value) {
-//         readDatasetDetail(selectedDataset.value.id)
-//     } else {
-//         activateDataset(index)
-//     }
-
-//     toastID.value = createToast({
-//         variant: 'success',
-//         message: 'Files embedded successfuly',
-//     })
-//     closeDialog()
-//     showToast.value = true
+    const response = await addDatasetDetail(newFiles)
+    if (response.ok) {
+        if (activeDatasetIndex.value === datasetIndexToUpdate) {
+            readDatasetDetail(datasetIndexToUpdate)
+        } else {
+            activeDatasetIndex.value = datasetIndexToUpdate // activeDatasetIndex change will fire readDatasetDetail Function
+        }
+        closeDialog()
+        createToast({
+            variant: 'success',
+            message: 'File(s) embedded successfuly',
+        })
+    }
 }
 </script>
+<style scoped>
+/* .fade-move,
+.fade-enter-active,
+.fade-leave-active {
+    transition: all 0.3s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.fade-enter-from {
+    opacity: 0;
+    transform: scale(0) translate(-300px, 0px);
+}
+
+.fade-leave-to {
+    opacity: 0;
+    transform: scale(0) translate(300px, 0px);
+}
+
+.fade-leave-active {
+    position: absolute;
+} */
+
+.slide-left-enter-active,
+.slide-left-leave-active {
+    transition: transform 0.3s ease-out, opacity 0.1s ease-out;
+}
+
+.slide-left-enter-from {
+    transform: translateX(-30%);
+    opacity: 0;
+}
+
+.slide-left-leave-to {
+    transform: translateX(30%);
+    opacity: 0;
+}
+</style>

@@ -1,6 +1,5 @@
 const BASE_URL: { [key in string]: string } = {
   'local-server': 'http://localhost:3132',
-  'ollama-server': 'http://localhost:5000'
 }
 
 const getFirstLayerUrl = (url: string): string => {
@@ -18,7 +17,7 @@ export const fetchData = async (endpoint: string, options = {}) => {
     const response = await fetch(newEndPoint, options)
     return response
   } catch (error) {
-    console.error('Error building restapi:', error);
+    throw error
   }
 }
 

@@ -7,7 +7,7 @@ export const initializeDatabase = async (dbPath: string) => {
   const db = new DataBase()
   try {
     await fs.access(dbPath, fs.constants.F_OK);
-    await db.openConnection(dbPath)
+    await db.openConnection()
   } catch (err) {
     if (err.code === 'ENOENT') {
       console.log('Database file is not existing!! Creating new database file...');
@@ -15,7 +15,7 @@ export const initializeDatabase = async (dbPath: string) => {
       await fs.mkdir(dirPath, { recursive: true });
       await fs.writeFile(dbPath, '');
       console.log('Database file has created');
-      await db.openConnection(dbPath)
+      await db.openConnection()
       console.log('Database open')
     } else {
       console.error('Unexpected error during file access:', err);
@@ -23,12 +23,11 @@ export const initializeDatabase = async (dbPath: string) => {
     }
   }
   try {
-    const exists = await db.connection.schema.hasTable('user_config')
-    if (!exists) {
+    const existsDB = await db.connection.schema.hasTable('connection')
+    if (!existsDB) {
       const response = await createTables(db.connection)
       console.log('Default Table has been created', response)
     }
-
   } catch (err) {
     console.error('Error initializing Knex:', err);
     throw err; // Re-throw the error for further handling in main.ts

@@ -90,3 +90,6 @@ typings/
 
 # Electron-Forge
 out/
+
+# Sqlite File
+*.sqlite

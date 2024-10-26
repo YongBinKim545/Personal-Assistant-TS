@@ -1,23 +1,23 @@
 <template>
     <div class="p-4 bg-light-surface-high dark:bg-dark-surface-high">
-        <div class="text-base font-bold uppercase mb-2">시스템 정보</div>
+        <div class="text-base font-bold uppercase mb-2">system information</div>
         <div class="text-xs flex justify-between mb-4">
             <div class="space-y-2">
                 <div>{{ `CPU: ${systemMetric.cpuUsage}%` }}</div>
                 <div class="bar bg-light-surface-lowest dark:bg-dark-surface-lowest">
-                    <div ref="cpuBarElement" class="bg-primary bar-inner"></div>
+                    <div ref="cpuBarElement" class="bg-secondary bar-inner"></div>
                 </div>
             </div>
             <div class="space-y-2">
                 <div>{{ `RAM:${systemMetric.memoryUsage}/${systemMetric.memoryTotal}GB` }}</div>
                 <div class="bar bg-light-surface-lowest dark:bg-dark-surface-lowest">
-                    <div ref="memoryBarElement" class="bg-primary bar-inner"></div>
+                    <div ref="memoryBarElement" class="bg-secondary bar-inner"></div>
                 </div>
             </div>
             <div class="space-y-2">
                 <div>GPU: -- % </div>
                 <div class="bar bg-light-surface-lowest dark:bg-dark-surface-lowest">
-                    <div ref="gpuBarElement" class="bg-primary bar-inner"></div>
+                    <div ref="gpuBarElement" class="bg-secondary bar-inner"></div>
                 </div>
             </div>
         </div>
@@ -25,8 +25,8 @@
 </template>
 
 <script setup lang="ts">
-const cpuBarElement = ref(null)
-const memoryBarElement = ref(null)
+const cpuBarElement = ref<HTMLElement>()
+const memoryBarElement = ref<HTMLElement>()
 const systemMetric = ref({
     cpuUsage: 0,
     memoryTotal: 0,
